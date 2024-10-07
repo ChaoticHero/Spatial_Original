@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace SpatialPartitionPattern{
     public class GameController : MonoBehaviour{
+        [SerializeField] private Text timetext;
         public GameObject friendlyObj;
         public GameObject enemyObj;
         public Material enemyMaterial;
@@ -43,7 +44,9 @@ namespace SpatialPartitionPattern{
         }
 
         void Update(){
-            for(int i = 0; i < enemySoldiers.Count; i++){
+            float startTime = Time.realtimeSinceStartup;
+
+            for (int i = 0; i < enemySoldiers.Count; i++){
                 enemySoldiers[i].Move();
             }
             for(int i = 0; i < closestEnemies.Count; i++){
@@ -63,6 +66,9 @@ namespace SpatialPartitionPattern{
                     friendlySoldiers[i].Move(closestEnemy);
                 }
             }
+            float elapsedTime = (Time.realtimeSinceStartup - startTime) * 1000f;
+            timetext.text = "Time:" + elapsedTime;
+            Debug.Log(elapsedTime + "ms");
         }
 
         Soldier FindClosestEnemySlow(Soldier soldier){
@@ -93,7 +99,7 @@ namespace SpatialPartitionPattern{
         }
 
         void UpdateText(){
-            counterText.text = "Number of Soldiers: " + numberOfSoldiers;
+            counterText.text = "Number: " + numberOfSoldiers;
         }
     }
 }
