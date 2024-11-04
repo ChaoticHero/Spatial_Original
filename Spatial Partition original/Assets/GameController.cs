@@ -6,11 +6,9 @@ using UnityEngine.UI;
 
 namespace SpatialPartitionPattern{
     public class GameController : MonoBehaviour{
-        [SerializeField] private Text timetext;
+        public Text timetext;
         public GameObject friendlyObj;
         public GameObject enemyObj;
-        public Material enemyMaterial;
-        public Material closestEnemyMaterial;
         public Transform enemyParent;
         public Transform friendlyParent;
         public Text counterText;
@@ -24,10 +22,10 @@ namespace SpatialPartitionPattern{
         Grid grid;
 
         void Start(){
-            isSpatial = false;
             grid = new Grid((int)mapWidth, cellSize);
-            UpdateText();
+            numberOfSoldiers = 400;
             SpawnAll();
+            UpdateText();
         }
 
         void SpawnAll(){
@@ -49,26 +47,23 @@ namespace SpatialPartitionPattern{
             for (int i = 0; i < enemySoldiers.Count; i++){
                 enemySoldiers[i].Move();
             }
-            for(int i = 0; i < closestEnemies.Count; i++){
-                closestEnemies[i].soldierMeshRenderer.material = enemyMaterial;
-            }
             closestEnemies.Clear();
             for(int i = 0; i < friendlySoldiers.Count; i++){
                 Soldier closestEnemy = null;
                 if(!isSpatial){
                     closestEnemy = FindClosestEnemySlow(friendlySoldiers[i]);
-                }else if(isSpatial){
+                }
+                else
+                { 
                     closestEnemy = grid.FindClosestEnemy(friendlySoldiers[i]);
                 }
                 if(closestEnemy != null){
-                    closestEnemy.soldierMeshRenderer.material = closestEnemyMaterial;
                     closestEnemies.Add(closestEnemy);
                     friendlySoldiers[i].Move(closestEnemy);
                 }
             }
             float elapsedTime = (Time.realtimeSinceStartup - startTime) * 1000f;
             timetext.text = "Time:" + elapsedTime;
-            Debug.Log(elapsedTime + "ms");
         }
 
         Soldier FindClosestEnemySlow(Soldier soldier){
@@ -90,12 +85,6 @@ namespace SpatialPartitionPattern{
 
         public void OnResetButton(){
             SceneManager.LoadScene(0);
-        }
-
-        public void AddCountButton(int counterToAdd){
-            numberOfSoldiers += counterToAdd;
-            UpdateText();
-            SpawnAll();
         }
 
         void UpdateText(){
